@@ -8,6 +8,9 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from src.api.ml_predictor import predict_student
 
+from src.recommendation.dynamic_recommendation import (
+    generate_dynamic_recommendation,
+)
 # ==========================================
 # KONFIGURASI
 # ==========================================
@@ -278,7 +281,15 @@ def analyze_student(student: StudentInput):
         student_data
     )
 
+    recommendation = (
+        generate_dynamic_recommendation(
+            student_data,
+            prediction,
+        )
+    )
+
     return {
         "student_id": student.student_id,
         "prediction": prediction,
+        "recommendation": recommendation,
     }
