@@ -1,0 +1,16 @@
+{
+    "features": [
+        "diagnostic_score",
+        "assignment_avg",
+        "quiz_avg",
+        "uts_score",
+        "learning_speed"
+    ],
+    "n_clusters": 3,
+    "random_state": 42,
+    "cluster_mapping": {
+        "2": "Fast Learner",
+        "0": "Steady Learner",
+        "1": "Needs Guidance"
+    }
+}
