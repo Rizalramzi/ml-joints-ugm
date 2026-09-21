@@ -5,6 +5,8 @@ from pathlib import Path
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 
+from pydantic import BaseModel, Field
+from src.api.ml_predictor import predict_student
 
 # ==========================================
 # KONFIGURASI
@@ -94,6 +96,36 @@ def convert_nan_to_none(record):
         for key, value in record.items()
     }
 
+class StudentInput(BaseModel):
+    student_id: str = Field(
+        min_length=1,
+        max_length=50,
+    )
+
+    diagnostic_score: float = Field(
+        ge=0,
+        le=100,
+    )
+
+    assignment_avg: float = Field(
+        ge=0,
+        le=100,
+    )
+
+    quiz_avg: float = Field(
+        ge=0,
+        le=100,
+    )
+
+    uts_score: float = Field(
+        ge=0,
+        le=100,
+    )
+
+    learning_speed: float = Field(
+        ge=0,
+        le=1,
+    )
 
 # ==========================================
 # HEALTH CHECK
@@ -235,4 +267,18 @@ def get_student_dashboard(student_id: str):
         "student_id": student_id,
         "profile": profile_response,
         "lesson_plan": lesson_plan_response,
+    }
+
+
+@app.post("/students/analyze")
+def analyze_student(student: StudentInput):
+    student_data = student.model_dump()
+
+    prediction = predict_student(
+        student_data
+    )
+
+    return {
+        "student_id": student.student_id,
+        "prediction": prediction,
     }
